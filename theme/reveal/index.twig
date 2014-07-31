@@ -1,0 +1,22 @@
+{% extends "base.twig" %}
+
+{% block title %}{{ app.config.get('general/sitename') }}{% endblock %}
+
+{% block content %}
+
+<div class="reveal">
+    <div class="slides">    
+
+        {% setcontent slides = "slides" %}
+        
+        {% for slide in slides %}
+
+            {% include 'slide.twig' %}
+
+        {% endfor %}
+
+    </div>
+</div>
+
+{% endblock %}
+
