@@ -7,7 +7,7 @@ database:
   databasename: bolt
 
 # The name of the website
-sitename: A sample site
+sitename: A Bolt presentation
 payoff: The amazing payoff goes here
 
 # The theme to use. Be sure to copy the theme/base-2013 folder, and change the
@@ -105,7 +105,7 @@ thumbnails:
 # the debugbar is only shown to logged-in users. Use the 'debug_show_loggedoff'
 # option to show it to all users. You probably do not want to use this in a
 # production environment.
-debug: false
+debug: true
 developer_notices: false
 debug_show_loggedoff: false
 debug_error_level: 6135 # equivalent to E_ALL &~ E_NOTICE &~ E_DEPRECATED &~ E_USER_DEPRECATED

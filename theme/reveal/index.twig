@@ -9,11 +9,19 @@
 
         {% setcontent slides = "slides" %}
         
+        {% set list = [] %}        
+
+        {% for slide in slides %}
+            {% set list = list|merge([slide.sub]) %}
+        {% endfor %}
+
+
         {% for slide in slides %}
 
             {% include 'slide.twig' %}
 
         {% endfor %}
+
 
     </div>
 </div>

@@ -52,6 +52,7 @@ slides:
     listing_template: listing.twig
     listing_records: 100
     recordsperpage: 100
+    default_status: published
 
 # Pages can be used for the more 'static' pages on your site. Things like
 # 'about us', 'contact' or a 'disclaimer'. This content-type has a 'templateselect'

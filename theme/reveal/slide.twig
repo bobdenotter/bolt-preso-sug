@@ -1,10 +1,10 @@
 {# Slides met een "sub" moeten een extra <section> tag krijgen. #}
-{% if not slide.sub and slide.next('id').sub %}
-<section>
+{% if not slide.sub and list[loop.index0 + 1] %}
+<section><!-- sub for: {{ slide.slug }} / {{ list[loop.index0 + 1] }} -->
 {% endif %}
 
     <section data-transition="{{ slide.transition }}"
-        {% if slide.background %}data-background="{{ image(slide.background) }}"{% endif %}>
+        {%- if slide.background %}data-background="{{ image(slide.background) }}"{% endif %}>
 
         <h{{ slide.headingsize }}>{{ slide.title }}</h{{ slide.headingsize }}>
 
@@ -25,6 +25,6 @@
     </section>
 
 {# En eventueel de extra <section> tag weer afsluiten. #}
-{% if slide.sub and not slide.next('id').sub %}
+{% if slide.sub and not list[loop.index0 + 1] %}
 </section>
 {% endif %}
