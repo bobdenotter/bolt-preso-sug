@@ -95,75 +95,75 @@ pages:
 # Since no templates are defined for this contenttype, the default record_template,
 # listing_template, and related settings are used from config.yml
 
-kitchensink:
-    name: Kitchensinks
-    singular_name: Kitchensink
-    fields:
-        title:
-            type: text
-            class: large
-            required: true
-            pattern: "*{2,255}" # see: http://html5pattern.com/
-        slug:
-            type: slug
-            uses: [ selectfield, title ]
-        video:
-            type: video
-        html:
-            type: html
-            height: 150px
-        geolocation:
-            type: geolocation
-        image:
-            type: image
-        imagelist:
-            type: imagelist
-        file:
-            type: file
-        checkbox:
-            type: checkbox
-            label: "This is a checkbox"
-        markdown:
-            prefix: "<em>This short text comes before the actual field.</em>"
-            type: markdown
-            postfix: "<hr>"
-        textarea:
-            type: textarea
-        template:
-            type: templateselect
-            filter: '*.twig'
-        datetime:
-            type: datetime
-            default: "2000-01-01"
-        date:
-            type: date
-            default: "first day of last month"
-        integerfield:
-            type: integer
-            index: true
-        floatfield:
-            type: float
-        selectfield:
-            type: select
-            values: [ none, foo, bar ]
-        multiselect:
-            type: select
-            values: [ A-tuin, Donatello, Rafael, Leonardo, Michelangelo, Koopa, Squirtle ]
-            multiple: true
-            postfix: "Select your favourite turtle(s)."
-    relations:
-        entries:
-            multiple: false
-            label: Choose an entry
-            order: -id
-        pages:
-            multiple: true
-            order: title
-            label: Select zero or more pages
-    taxonomy: [ categories, tags, chapters ]
-    show_on_dashboard: true
-    default_status: draft
-    searchable: false
+# kitchensink:
+#     name: Kitchensinks
+#     singular_name: Kitchensink
+#     fields:
+#         title:
+#             type: text
+#             class: large
+#             required: true
+#             pattern: "*{2,255}" # see: http://html5pattern.com/
+#         slug:
+#             type: slug
+#             uses: [ selectfield, title ]
+#         video:
+#             type: video
+#         html:
+#             type: html
+#             height: 150px
+#         geolocation:
+#             type: geolocation
+#         image:
+#             type: image
+#         imagelist:
+#             type: imagelist
+#         file:
+#             type: file
+#         checkbox:
+#             type: checkbox
+#             label: "This is a checkbox"
+#         markdown:
+#             prefix: "<em>This short text comes before the actual field.</em>"
+#             type: markdown
+#             postfix: "<hr>"
+#         textarea:
+#             type: textarea
+#         template:
+#             type: templateselect
+#             filter: '*.twig'
+#         datetime:
+#             type: datetime
+#             default: "2000-01-01"
+#         date:
+#             type: date
+#             default: "first day of last month"
+#         integerfield:
+#             type: integer
+#             index: true
+#         floatfield:
+#             type: float
+#         selectfield:
+#             type: select
+#             values: [ none, foo, bar ]
+#         multiselect:
+#             type: select
+#             values: [ A-tuin, Donatello, Rafael, Leonardo, Michelangelo, Koopa, Squirtle ]
+#             multiple: true
+#             postfix: "Select your favourite turtle(s)."
+#     relations:
+#         entries:
+#             multiple: false
+#             label: Choose an entry
+#             order: -id
+#         pages:
+#             multiple: true
+#             order: title
+#             label: Select zero or more pages
+#     taxonomy: [ categories, tags, chapters ]
+#     show_on_dashboard: true
+#     default_status: draft
+#     searchable: false
 
 
 # possible field types:
