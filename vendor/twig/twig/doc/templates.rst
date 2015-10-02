@@ -60,6 +60,9 @@ Many IDEs support syntax highlighting and auto-completion for Twig:
 * *Emacs* via `web-mode.el`_
 * *Atom* via the `PHP-twig for atom`_
 
+Also, `TwigFiddle`_ is an online service that allows you to execute Twig templates
+from a browser; it supports all versions of Twig.
+
 Variables
 ---------
 
@@ -93,7 +96,7 @@ access the variable attribute:
     don't put the braces around them.
 
 If a variable or attribute does not exist, you will receive a ``null`` value
-when the ``strict_variables`` option is set to ``false``; alternatively, if ``strict_variables`` 
+when the ``strict_variables`` option is set to ``false``; alternatively, if ``strict_variables``
 is set, Twig will throw an error (see :ref:`environment options<environment_options>`).
 
 .. sidebar:: Implementation
@@ -124,7 +127,7 @@ Global Variables
 
 The following variables are always available in templates:
 
-* ``_self``: references the current template;
+* ``_self``: references the current template (deprecated since Twig 1.20);
 * ``_context``: references the current context;
 * ``_charset``: references the current charset.
 
@@ -541,6 +544,9 @@ macro call:
         <input type="{{ type }}" name="{{ name }}" value="{{ value|e }}" size="{{ size }}" />
     {% endmacro %}
 
+If extra positional arguments are passed to a macro call, they end up in the
+special ``varargs`` variable as a list of values.
+
 .. _twig-expressions:
 
 Expressions
@@ -669,6 +675,10 @@ You can combine multiple expressions with the following operators:
 
     Twig also support bitwise operators (``b-and``, ``b-xor``, and ``b-or``).
 
+.. note::
+
+    Operators are case sensitive.
+
 Comparisons
 ~~~~~~~~~~~
 
@@ -693,7 +703,7 @@ string:
 
     .. code-block:: jinja
 
-        {% if phone matches '{^[\d\.]+$}' %}
+        {% if phone matches '/^[\\d\\.]+$/' %}
         {% endif %}
 
 Containment Operator
@@ -801,6 +811,8 @@ inserted into the string:
     {{ "foo #{bar} baz" }}
     {{ "foo #{1 + 2} baz" }}
 
+.. _templates-whitespace-control:
+
 Whitespace Control
 ------------------
 
@@ -866,10 +878,11 @@ Extension<creating_extensions>` chapter.
 .. _`Twig syntax plugin`:         http://plugins.netbeans.org/plugin/37069/php-twig
 .. _`Twig plugin`:                https://github.com/pulse00/Twig-Eclipse-Plugin
 .. _`Twig language definition`:   https://github.com/gabrielcorpse/gedit-twig-template-language
-.. _`extension repository`:       http://github.com/fabpot/Twig-extensions
+.. _`extension repository`:       http://github.com/twigphp/Twig-extensions
 .. _`Twig syntax mode`:           https://github.com/bobthecow/Twig-HTML.mode
 .. _`other Twig syntax mode`:     https://github.com/muxx/Twig-HTML.mode
 .. _`Notepad++ Twig Highlighter`: https://github.com/Banane9/notepadplusplus-twig
 .. _`web-mode.el`:                http://web-mode.org/
 .. _`regular expressions`:        http://php.net/manual/en/pcre.pattern.php
 .. _`PHP-twig for atom`:          https://github.com/reesef/php-twig
+.. _`TwigFiddle`:                 http://twigfiddle.com/

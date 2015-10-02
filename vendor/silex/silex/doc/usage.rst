@@ -18,39 +18,11 @@ it, you should have the following directory structure:
     └── web
         └── index.php
 
-If you want more flexibility, use Composer_ instead. Create a
-``composer.json`` file and put this in it:
-
-.. code-block:: json
-
-    {
-        "require": {
-            "silex/silex": "~1.1"
-        }
-    }
-
-And run Composer to install Silex and all its dependencies:
+If you want more flexibility, use Composer_ instead:
 
 .. code-block:: bash
 
-    $ curl -s http://getcomposer.org/installer | php
-    $ php composer.phar install
-
-.. tip::
-
-    By default, Silex relies on the stable Symfony components. If you want to
-    use their master version instead, add ``"minimum-stability": "dev"`` in
-    your ``composer.json`` file.
-
-Upgrading
----------
-
-Upgrading Silex to the latest version is as easy as running the ``update``
-command:
-
-.. code-block:: bash
-
-    $ php composer.phar update
+    composer require silex/silex:~1.2
 
 Bootstrap
 ---------
@@ -101,9 +73,10 @@ A route pattern consists of:
   pattern can include variable parts and you are able to set RegExp
   requirements for them.
 
-* *Method*: One of the following HTTP methods: ``GET``, ``POST``, ``PUT`` or
-  ``DELETE``. This describes the interaction with the resource. Commonly only
-  ``GET`` and ``POST`` are used, but it is possible to use the others as well.
+* *Method*: One of the following HTTP methods: ``GET``, ``POST``, ``PUT``,
+  ``DELETE`` or ``PATCH``. This describes the interaction with the resource.
+  Commonly only ``GET`` and ``POST`` are used, but it is possible to use the
+  others as well.
 
 The controller is defined using a closure like this::
 
@@ -229,6 +202,10 @@ methods on your application: ``get``, ``post``, ``put``, ``delete``::
         // ...
     });
 
+    $app->patch('/blog/{id}', function ($id) {
+        // ...
+    });
+
 .. tip::
 
     Forms in most web browsers do not directly support the use of other HTTP
@@ -290,7 +267,7 @@ closure arguments match the names of the variable parts::
         // ...
     });
 
-While it's not recommend, you could also do this (note the switched
+While it's not recommended, you could also do this (note the switched
 arguments)::
 
     $app->get('/blog/{postId}/{commentId}', function ($commentId, $postId) {
@@ -312,8 +289,8 @@ You can also ask for the current Request and Application objects::
             // ...
         });
 
-Route Variables Converters
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+Route Variable Converters
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Before injecting the route variables into the controller, you can apply some
 converters::
@@ -350,7 +327,7 @@ The converter callback also receives the ``Request`` as its second argument::
 A converter can also be defined as a service. For example, here is a user
 converter based on Doctrine ObjectManager::
 
-    use Doctrine\Common\Persistence\ObjectManager
+    use Doctrine\Common\Persistence\ObjectManager;
     use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
     class UserConverter
@@ -563,7 +540,7 @@ once a response is returned, the following handlers are ignored.
 .. note::
 
     Silex ships with a provider for Monolog_ which handles logging of errors.
-    Check out the *Providers* chapter for details.
+    Check out the *Providers* :doc:`chapter <providers/monolog>` for details.
 
 .. tip::
 

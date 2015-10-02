@@ -67,14 +67,11 @@ Registering
 .. note::
 
     Doctrine DBAL comes with the "fat" Silex archive but not with the regular
-    one. If you are using Composer, add it as a dependency to your
-    ``composer.json`` file:
+    one. If you are using Composer, add it as a dependency:
 
-    .. code-block:: json
+    .. code-block:: bash
 
-        "require": {
-            "doctrine/dbal": "2.2.*",
-         }
+        composer require "doctrine/dbal:~2.2"
 
 Usage
 -----
@@ -106,7 +103,7 @@ and values are options::
                 'dbname'    => 'my_database',
                 'user'      => 'my_username',
                 'password'  => 'my_password',
-                'charset'   => 'utf8',
+                'charset'   => 'utf8mb4',
             ),
             'mysql_write' => array(
                 'driver'    => 'pdo_mysql',
@@ -114,7 +111,7 @@ and values are options::
                 'dbname'    => 'my_database',
                 'user'      => 'my_username',
                 'password'  => 'my_password',
-                'charset'   => 'utf8',
+                'charset'   => 'utf8mb4',
             ),
         ),
     ));
