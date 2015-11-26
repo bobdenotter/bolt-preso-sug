@@ -4,9 +4,11 @@
 {% endif %}
 
     <section data-transition="{{ slide.transition }}"
-        {%- if slide.background %}data-background="{{ image(slide.background) }}"{% endif %}>
+        {%- if slide.background %} data-background="{{ image(slide.background) }}"{% endif %}>
 
-        <h{{ slide.headingsize }}>{{ slide.title }}</h{{ slide.headingsize }}>
+        {% if slide.contents is not empty or slide.code is not empty %}
+            <h{{ slide.headingsize }}>{{ slide.title }}</h{{ slide.headingsize }}>
+        {% endif %}
 
         {{ slide.contents }}
 

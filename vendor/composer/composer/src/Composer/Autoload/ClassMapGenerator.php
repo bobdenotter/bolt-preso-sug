@@ -1,14 +1,19 @@
 <?php
 
 /*
- * This file is copied from the Symfony package.
+ * This file is part of Composer.
  *
- * (c) Fabien Potencier <fabien@symfony.com>
+ * (c) Nils Adermann <naderman@naderman.de>
+ *     Jordi Boggiano <j.boggiano@seld.be>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
+ */
+
+/*
+ * This file is copied from the Symfony package.
  *
- * @license MIT
+ * (c) Fabien Potencier <fabien@symfony.com>
  */
 
 namespace Composer\Autoload;
@@ -45,15 +50,14 @@ class ClassMapGenerator
      * Iterate over all files in the given directory searching for classes
      *
      * @param \Iterator|string $path      The path to search in or an iterator
-     * @param string           $whitelist Regex that matches against the file path
+     * @param string           $blacklist Regex that matches against the file path that exclude from the classmap.
      * @param IOInterface      $io        IO object
      * @param string           $namespace Optional namespace prefix to filter by
      *
-     * @return array A class map array
-     *
      * @throws \RuntimeException When the path is neither an existing file nor directory
+     * @return array             A class map array
      */
-    public static function createMap($path, $whitelist = null, IOInterface $io = null, $namespace = null)
+    public static function createMap($path, $blacklist = null, IOInterface $io = null, $namespace = null)
     {
         if (is_string($path)) {
             if (is_file($path)) {
@@ -77,7 +81,7 @@ class ClassMapGenerator
                 continue;
             }
 
-            if ($whitelist && !preg_match($whitelist, strtr($filePath, '\\', '/'))) {
+            if ($blacklist && preg_match($blacklist, strtr($filePath, '\\', '/'))) {
                 continue;
             }
 

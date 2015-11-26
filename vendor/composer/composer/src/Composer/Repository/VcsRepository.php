@@ -14,7 +14,7 @@ namespace Composer\Repository;
 
 use Composer\Downloader\TransportException;
 use Composer\Repository\Vcs\VcsDriverInterface;
-use Composer\Package\Version\VersionParser;
+use Composer\Semver\VersionParser;
 use Composer\Package\Loader\ArrayLoader;
 use Composer\Package\Loader\ValidatingArrayLoader;
 use Composer\Package\Loader\InvalidPackageException;
@@ -43,6 +43,7 @@ class VcsRepository extends ArrayRepository
     {
         $this->drivers = $drivers ?: array(
             'github'        => 'Composer\Repository\Vcs\GitHubDriver',
+            'gitlab'        => 'Composer\Repository\Vcs\GitLabDriver',
             'git-bitbucket' => 'Composer\Repository\Vcs\GitBitbucketDriver',
             'git'           => 'Composer\Repository\Vcs\GitDriver',
             'hg-bitbucket'  => 'Composer\Repository\Vcs\HgBitbucketDriver',

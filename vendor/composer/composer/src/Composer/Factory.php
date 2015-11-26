@@ -24,7 +24,8 @@ use Composer\Util\RemoteFilesystem;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Composer\EventDispatcher\EventDispatcher;
 use Composer\Autoload\AutoloadGenerator;
-use Composer\Package\Version\VersionParser;
+use Composer\Semver\VersionParser;
+use Seld\JsonLint\JsonParser;
 
 /**
  * Creates a configured instance of composer.
@@ -37,8 +38,8 @@ use Composer\Package\Version\VersionParser;
 class Factory
 {
     /**
-     * @return string
      * @throws \RuntimeException
+     * @return string
      */
     protected static function getHomeDir()
     {
@@ -61,8 +62,7 @@ class Factory
     }
 
     /**
-     * @param string $home
-     *
+     * @param  string $home
      * @return string
      */
     protected static function getCacheDir($home)
@@ -220,6 +220,14 @@ class Factory
             }
 
             $file->validateSchema(JsonFile::LAX_SCHEMA);
+            $jsonParser = new JsonParser;
+            try {
+                $jsonParser->parse(file_get_contents($localConfig), JsonParser::DETECT_KEY_CONFLICTS);
+            } catch (\Seld\JsonLint\DuplicateKeyException $e) {
+                $details = $e->getDetails();
+                $io->writeError('<warning>Key '.$details['key'].' is a duplicate in '.$localConfig.' at line '.$details['line'].'</warning>');
+            }
+
             $localConfig = $file->read();
         }
 
@@ -263,11 +271,17 @@ class Factory
         // load local repository
         $this->addLocalRepository($rm, $vendorDir);
 
+        // force-set the version of the global package if not defined as
+        // guessing it adds no value and only takes time
+        if (!$fullLoad && !isset($localConfig['version'])) {
+            $localConfig['version'] = '1.0.0';
+        }
+
         // load package
         $parser = new VersionParser;
         $guesser = new VersionGuesser($config, new ProcessExecutor($io), $parser);
         $loader  = new Package\Loader\RootPackageLoader($rm, $config, $parser, $guesser);
-        $package = $loader->load($localConfig);
+        $package = $loader->load($localConfig, 'Composer\Package\RootPackage', $cwd);
         $composer->setPackage($package);
 
         // initialize installation manager
@@ -289,12 +303,10 @@ class Factory
 
         if ($fullLoad) {
             $globalComposer = $this->createGlobalComposer($io, $config, $disablePlugins);
-            $pm = $this->createPluginManager($io, $composer, $globalComposer);
+            $pm = $this->createPluginManager($io, $composer, $globalComposer, $disablePlugins);
             $composer->setPluginManager($pm);
 
-            if (!$disablePlugins) {
-                $pm->loadInstalledPlugins();
-            }
+            $pm->loadInstalledPlugins();
 
             // once we have plugins and custom installers we can
             // purge packages from local repos if they have been deleted on the filesystem
@@ -329,6 +341,7 @@ class Factory
         $rm->setRepositoryClass('package', 'Composer\Repository\PackageRepository');
         $rm->setRepositoryClass('pear', 'Composer\Repository\PearRepository');
         $rm->setRepositoryClass('git', 'Composer\Repository\VcsRepository');
+        $rm->setRepositoryClass('gitlab', 'Composer\Repository\VcsRepository');
         $rm->setRepositoryClass('svn', 'Composer\Repository\VcsRepository');
         $rm->setRepositoryClass('perforce', 'Composer\Repository\VcsRepository');
         $rm->setRepositoryClass('hg', 'Composer\Repository\VcsRepository');
@@ -404,6 +417,7 @@ class Factory
         $dm->setDownloader('rar', new Downloader\RarDownloader($io, $config, $eventDispatcher, $cache));
         $dm->setDownloader('tar', new Downloader\TarDownloader($io, $config, $eventDispatcher, $cache));
         $dm->setDownloader('gzip', new Downloader\GzipDownloader($io, $config, $eventDispatcher, $cache));
+        $dm->setDownloader('xz', new Downloader\XzDownloader($io, $config, $eventDispatcher, $cache));
         $dm->setDownloader('phar', new Downloader\PharDownloader($io, $config, $eventDispatcher, $cache));
         $dm->setDownloader('file', new Downloader\FileDownloader($io, $config, $eventDispatcher, $cache));
         $dm->setDownloader('path', new Downloader\PathDownloader($io, $config, $eventDispatcher, $cache));
@@ -412,9 +426,8 @@ class Factory
     }
 
     /**
-     * @param Config                     $config The configuration
-     * @param Downloader\DownloadManager $dm     Manager use to download sources
-     *
+     * @param  Config                     $config The configuration
+     * @param  Downloader\DownloadManager $dm     Manager use to download sources
      * @return Archiver\ArchiveManager
      */
     public function createArchiveManager(Config $config, Downloader\DownloadManager $dm = null)
@@ -435,11 +448,12 @@ class Factory
      * @param  IOInterface          $io
      * @param  Composer             $composer
      * @param  Composer             $globalComposer
+     * @param  bool                 $disablePlugins
      * @return Plugin\PluginManager
      */
-    protected function createPluginManager(IOInterface $io, Composer $composer, Composer $globalComposer = null)
+    protected function createPluginManager(IOInterface $io, Composer $composer, Composer $globalComposer = null, $disablePlugins = false)
     {
-        return new Plugin\PluginManager($io, $composer, $globalComposer);
+        return new Plugin\PluginManager($io, $composer, $globalComposer, $disablePlugins);
     }
 
     /**

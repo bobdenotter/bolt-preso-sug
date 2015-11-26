@@ -108,7 +108,7 @@ class Extensions
         $this->basefolder = $app['resources']->getPath('extensions');
         $this->matchedcomments = array();
 
-        if ($app['config']->get('general/add_jquery')) {
+        if ($app['config']->get('general/add_jquery') || $app['config']->get('theme/add_jquery')) {
             $this->addjquery = true;
         } else {
             $this->addjquery = false;
@@ -548,7 +548,7 @@ class Extensions
 
             $options = array(
                 'late'     => isset($args[1]) ? isset($args[1]) : false,
-                'priority' => isset($args[2]) ? isset($args[2]) : 0,
+                'priority' => isset($args[2]) ? $args[2] : 0,
                 'attrib'   => false
             );
         }
@@ -578,7 +578,7 @@ class Extensions
 
             $options = array(
                 'late'     => isset($args[1]) ? isset($args[1]) : false,
-                'priority' => isset($args[2]) ? isset($args[2]) : 0,
+                'priority' => isset($args[2]) ? $args[2] : 0,
                 'attrib'   => false
             );
         }
@@ -935,7 +935,7 @@ class Extensions
     public function insertEndOfHead($tag, $html)
     {
         // first, attempt to insert it before the </head> tag, matching indentation.
-        if (preg_match("~^([ \t]*)</head~mi", $html, $matches)) {
+        if (preg_match("~([ \t]*)</head~mi", $html, $matches)) {
 
             // Try to insert it just before </head>
             $replacement = sprintf("%s\t%s\n%s", $matches[1], $tag, $matches[0]);
@@ -961,7 +961,7 @@ class Extensions
     public function insertEndOfBody($tag, $html)
     {
         // first, attempt to insert it before the </body> tag, matching indentation.
-        if (preg_match("~^([ \t]*)</body~mi", $html, $matches)) {
+        if (preg_match("~([ \t]*)</body~mi", $html, $matches)) {
 
             // Try to insert it just before </head>
             $replacement = sprintf("%s\t%s\n%s", $matches[1], $tag, $matches[0]);
@@ -987,7 +987,7 @@ class Extensions
     public function insertEndOfHtml($tag, $html)
     {
         // first, attempt to insert it before the </body> tag, matching indentation.
-        if (preg_match("~^([ \t]*)</html~mi", $html, $matches)) {
+        if (preg_match("~([ \t]*)</html~mi", $html, $matches)) {
 
             // Try to insert it just before </head>
             $replacement = sprintf("%s\t%s\n%s", $matches[1], $tag, $matches[0]);

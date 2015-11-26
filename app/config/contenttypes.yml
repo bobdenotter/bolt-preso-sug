@@ -20,6 +20,7 @@ slides:
         title:
             type: text
             class: large
+            group: Inhoud
         slug:
             type: slug
             uses: title

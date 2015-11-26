@@ -13,11 +13,12 @@
 namespace Composer\Package\Loader;
 
 use Composer\Package\BasePackage;
+use Composer\Package\PackageInterface;
 use Composer\Package\AliasPackage;
 use Composer\Config;
 use Composer\Factory;
 use Composer\Package\Version\VersionGuesser;
-use Composer\Package\Version\VersionParser;
+use Composer\Semver\VersionParser;
 use Composer\Repository\RepositoryManager;
 use Composer\Util\ProcessExecutor;
 
@@ -54,7 +55,13 @@ class RootPackageLoader extends ArrayLoader
         $this->versionGuesser = $versionGuesser ?: new VersionGuesser($config, new ProcessExecutor(), $this->versionParser);
     }
 
-    public function load(array $config, $class = 'Composer\Package\RootPackage')
+    /**
+     * @param  array            $config package data
+     * @param  string           $class  FQCN to be instantiated
+     * @param  string           $cwd    cwd of the root package to be used to guess the version if it is not provided
+     * @return PackageInterface
+     */
+    public function load(array $config, $class = 'Composer\Package\RootPackage', $cwd = null)
     {
         if (!isset($config['name'])) {
             $config['name'] = '__root__';
@@ -65,7 +72,7 @@ class RootPackageLoader extends ArrayLoader
             if (getenv('COMPOSER_ROOT_VERSION')) {
                 $version = getenv('COMPOSER_ROOT_VERSION');
             } else {
-                $version = $this->versionGuesser->guessVersion($config, getcwd());
+                $version = $this->versionGuesser->guessVersion($config, $cwd ?: getcwd());
             }
 
             if (!$version) {
@@ -144,16 +151,33 @@ class RootPackageLoader extends ArrayLoader
         $stabilities = BasePackage::$stabilities;
         $minimumStability = $stabilities[$minimumStability];
         foreach ($requires as $reqName => $reqVersion) {
-            // parse explicit stability flags to the most unstable
-            if (preg_match('{^[^@]*?@('.implode('|', array_keys($stabilities)).')$}i', $reqVersion, $match)) {
-                $name = strtolower($reqName);
-                $stability = $stabilities[VersionParser::normalizeStability($match[1])];
+            $constraints = array();
 
-                if (isset($stabilityFlags[$name]) && $stabilityFlags[$name] > $stability) {
-                    continue;
+            // extract all sub-constraints in case it is an OR/AND multi-constraint
+            $orSplit = preg_split('{\s*\|\|?\s*}', trim($reqVersion));
+            foreach ($orSplit as $constraint) {
+                $andSplit = preg_split('{(?<!^|as|[=>< ,]) *(?<!-)[, ](?!-) *(?!,|as|$)}', $constraint);
+                foreach ($andSplit as $constraint) {
+                    $constraints[] = $constraint;
                 }
-                $stabilityFlags[$name] = $stability;
+            }
 
+            // parse explicit stability flags to the most unstable
+            $match = false;
+            foreach ($constraints as $constraint) {
+                if (preg_match('{^[^@]*?@('.implode('|', array_keys($stabilities)).')$}i', $constraint, $match)) {
+                    $name = strtolower($reqName);
+                    $stability = $stabilities[VersionParser::normalizeStability($match[1])];
+
+                    if (isset($stabilityFlags[$name]) && $stabilityFlags[$name] > $stability) {
+                        continue;
+                    }
+                    $stabilityFlags[$name] = $stability;
+                    $match = true;
+                }
+            }
+
+            if ($match) {
                 continue;
             }
 

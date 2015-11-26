@@ -11,7 +11,7 @@ chapters:
     slug: chapters
     singular_slug: chapter
     behaves_like: grouping
-    options: { intro: "Intro", outro: "Outro", twig: "Twig primer", twig2: "Twig deel 2", "trash": "De Prullenbak" }
+    options: { intro: "Intro", outro: "Outro", kliekjes: "Kliekjes", twig: "Twig primer", twig2: "Twig deel 2" }
     has_sortorder: true
 
 categories:

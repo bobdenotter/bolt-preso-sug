@@ -16,9 +16,9 @@ use Composer\Config;
 use Composer\IO\IOInterface;
 use Composer\Json\JsonFile;
 use Composer\Package\Loader\ArrayLoader;
-use Composer\Package\Loader\LoaderInterface;
+use Composer\Package\Locker;
 use Composer\Package\Version\VersionGuesser;
-use Composer\Package\Version\VersionParser;
+use Composer\Semver\VersionParser;
 use Composer\Util\ProcessExecutor;
 
 /**
@@ -74,9 +74,9 @@ class PathRepository extends ArrayRepository
     /**
      * Initializes path repository.
      *
-     * @param array $repoConfig
+     * @param array       $repoConfig
      * @param IOInterface $io
-     * @param Config $config
+     * @param Config      $config
      */
     public function __construct(array $repoConfig, IOInterface $io, Config $config)
     {
@@ -101,10 +101,10 @@ class PathRepository extends ArrayRepository
     {
         parent::initialize();
 
-        foreach ($this->getPaths() as $path) {
-            $path = realpath($path) . '/';
-
+        foreach ($this->getUrlMatches() as $url) {
+            $path = realpath($url) . '/';
             $composerFilePath = $path.'composer.json';
+
             if (!file_exists($composerFilePath)) {
                 continue;
             }
@@ -113,7 +113,7 @@ class PathRepository extends ArrayRepository
             $package = JsonFile::parseJson($json, $composerFilePath);
             $package['dist'] = array(
                 'type' => 'path',
-                'url' => $path,
+                'url' => $url,
                 'reference' => '',
             );
 
@@ -122,6 +122,8 @@ class PathRepository extends ArrayRepository
             }
             if (is_dir($path.'/.git') && 0 === $this->process->execute('git log -n1 --pretty=%H', $output, $path)) {
                 $package['dist']['reference'] = trim($output);
+            } else {
+                $package['dist']['reference'] = Locker::getContentHash($json);
             }
 
             $package = $this->loader->load($package);
@@ -134,12 +136,12 @@ class PathRepository extends ArrayRepository
     }
 
     /**
-     * Get a list of all path names matching given url (supports globbing).
+     * Get a list of all (possibly relative) path names matching given url (supports globbing).
      *
      * @return string[]
      */
-    private function getPaths()
+    private function getUrlMatches()
     {
-        return glob($this->url, GLOB_MARK|GLOB_ONLYDIR);
+        return glob($this->url, GLOB_MARK | GLOB_ONLYDIR);
     }
 }

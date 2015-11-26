@@ -45,6 +45,7 @@ class EventDispatcher
     protected $loader;
     protected $process;
     protected $listeners;
+    private $eventStack;
 
     /**
      * Constructor.
@@ -58,6 +59,7 @@ class EventDispatcher
         $this->composer = $composer;
         $this->io = $io;
         $this->process = $process ?: new ProcessExecutor($io);
+        $this->eventStack = array();
     }
 
     /**
@@ -136,20 +138,30 @@ class EventDispatcher
      *
      * @param  Event             $event          The event object to pass to the event handlers/listeners.
      * @param  string            $additionalArgs
-     * @return int               return code of the executed script if any, for php scripts a false return
-     *                                          value is changed to 1, anything else to 0
      * @throws \RuntimeException
      * @throws \Exception
+     * @return int               return code of the executed script if any, for php scripts a false return
+     *                                          value is changed to 1, anything else to 0
      */
     protected function doDispatch(Event $event)
     {
         $listeners = $this->getListeners($event);
+
+        $this->pushEvent($event);
 
         $return = 0;
         foreach ($listeners as $callable) {
             if (!is_string($callable) && is_callable($callable)) {
                 $event = $this->checkListenerExpectedEvent($callable, $event);
                 $return = false === call_user_func($callable, $event) ? 1 : 0;
+            } elseif ($this->isComposerScript($callable)) {
+                if ($this->io->isVerbose()) {
+                    $this->io->writeError(sprintf('> %s: %s', $event->getName(), $callable));
+                }
+                $scriptName = substr($callable, 1);
+                $args = $event->getArguments();
+                $flags = $event->getFlags();
+                $return = $this->dispatch($scriptName, new Script\Event($scriptName, $event->getComposer(), $event->getIO(), $event->isDevMode(), $args, $flags));
             } elseif ($this->isPhpScript($callable)) {
                 $className = substr($callable, 0, strpos($callable, '::'));
                 $methodName = substr($callable, strpos($callable, '::') + 2);
@@ -190,6 +202,8 @@ class EventDispatcher
             }
         }
 
+        $this->popEvent();
+
         return $return;
     }
 
@@ -212,8 +226,8 @@ class EventDispatcher
     }
 
     /**
-     * @param mixed $target
-     * @param Event $event
+     * @param  mixed              $target
+     * @param  Event              $event
      * @return Event|CommandEvent
      */
     protected function checkListenerExpectedEvent($target, Event $event)
@@ -260,7 +274,7 @@ class EventDispatcher
      *
      * @param string   $eventName The event name - typically a constant
      * @param Callable $listener  A callable expecting an event argument
-     * @param integer  $priority  A higher value represents a higher priority
+     * @param int      $priority  A higher value represents a higher priority
      */
     protected function addListener($eventName, $listener, $priority = 0)
     {
@@ -313,8 +327,8 @@ class EventDispatcher
     /**
      * Checks if an event has listeners registered
      *
-     * @param  Event   $event
-     * @return boolean
+     * @param  Event $event
+     * @return bool
      */
     public function hasEventListeners(Event $event)
     {
@@ -355,11 +369,49 @@ class EventDispatcher
     /**
      * Checks if string given references a class path and method
      *
-     * @param  string  $callable
-     * @return boolean
+     * @param  string $callable
+     * @return bool
      */
     protected function isPhpScript($callable)
     {
         return false === strpos($callable, ' ') && false !== strpos($callable, '::');
+    }
+
+    /**
+     * Checks if string given references a composer run-script
+     *
+     * @param  string $callable
+     * @return bool
+     */
+    protected function isComposerScript($callable)
+    {
+        return '@' === substr($callable, 0, 1);
+    }
+
+    /**
+     * Push an event to the stack of active event
+     *
+     * @param  Event             $event
+     * @throws \RuntimeException
+     * @return number
+     */
+    protected function pushEvent(Event $event)
+    {
+        $eventName = $event->getName();
+        if (in_array($eventName, $this->eventStack)) {
+            throw new \RuntimeException(sprintf("Circular call to script handler '%s' detected", $eventName));
+        }
+
+        return array_push($this->eventStack, $eventName);
+    }
+
+    /**
+     * Pops the active event from the stack
+     *
+     * @return mixed
+     */
+    protected function popEvent()
+    {
+        return array_pop($this->eventStack);
     }
 }

@@ -12,10 +12,10 @@
 <body id="home" style="padding: 12px;">
 
         {% setcontent slides = "slides" %}
-        
+
         {% for slide in slides %}
 
-            <h1>{{ slide.title }}</h1>
+            <h1>{{ loop.index }} - {{ slide.title }}</h1>
 
             {{ slide.notes }}
 

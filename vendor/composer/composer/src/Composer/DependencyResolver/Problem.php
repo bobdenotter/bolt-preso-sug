@@ -109,7 +109,7 @@ class Problem
                     $ext = substr($job['packageName'], 4);
                     $error = extension_loaded($ext) ? 'has the wrong version ('.(phpversion($ext) ?: '0').') installed' : 'is missing from your system';
 
-                    return "\n    - The requested PHP extension ".$job['packageName'].$this->constraintToText($job['constraint']).' '.$error.'.';
+                    return "\n    - The requested PHP extension ".$job['packageName'].$this->constraintToText($job['constraint']).' '.$error.'. Install or enable PHP\'s '.$ext.' extension.';
                 }
 
                 // handle linked libs
@@ -222,7 +222,7 @@ class Problem
     /**
      * Turns a constraint into text usable in a sentence describing a job
      *
-     * @param  \Composer\Package\LinkConstraint\LinkConstraintInterface $constraint
+     * @param  \Composer\Semver\Constraint\ConstraintInterface $constraint
      * @return string
      */
     protected function constraintToText($constraint)

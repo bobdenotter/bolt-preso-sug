@@ -6,11 +6,11 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    $vendorDir . '/symfony/intl/Symfony/Component/Intl/Resources/stubs/functions.php',
-    $vendorDir . '/symfony/var-dumper/Symfony/Component/VarDumper/Resources/functions/dump.php',
-    $vendorDir . '/swiftmailer/swiftmailer/lib/swift_required.php',
-    $vendorDir . '/react/promise/src/functions_include.php',
-    $vendorDir . '/siriusphp/validation/autoload.php',
-    $vendorDir . '/bolt/dumper/class.dumper.php',
-    $vendorDir . '/siriusphp/upload/autoload.php',
+    '0c6cbb9f3b940f8793568234794898a5' => $vendorDir . '/symfony/intl/Symfony/Component/Intl/Resources/stubs/functions.php',
+    '6fac04860a2cf4b03e356f4caca377d6' => $vendorDir . '/symfony/var-dumper/Symfony/Component/VarDumper/Resources/functions/dump.php',
+    '01b872096dad055849387e42d41a176d' => $vendorDir . '/swiftmailer/swiftmailer/lib/swift_required.php',
+    '3ad337fb1e17055256ca59753bdfe795' => $vendorDir . '/react/promise/src/functions_include.php',
+    '18b58db359b033d10624fbe80c38e205' => $vendorDir . '/siriusphp/validation/autoload.php',
+    '03b8fe7bf35a3be5bfeccd6a291d9dbc' => $vendorDir . '/bolt/dumper/class.dumper.php',
+    'd8929c78fc4ecd8b8e84359b6fc13c0a' => $vendorDir . '/siriusphp/upload/autoload.php',
 );
