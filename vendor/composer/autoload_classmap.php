@@ -351,6 +351,7 @@ return array(
     'Composer\\Repository\\ArtifactRepository' => $vendorDir . '/composer/composer/src/Composer/Repository/ArtifactRepository.php',
     'Composer\\Repository\\ComposerRepository' => $vendorDir . '/composer/composer/src/Composer/Repository/ComposerRepository.php',
     'Composer\\Repository\\CompositeRepository' => $vendorDir . '/composer/composer/src/Composer/Repository/CompositeRepository.php',
+    'Composer\\Repository\\ConfigurableRepositoryInterface' => $vendorDir . '/composer/composer/src/Composer/Repository/ConfigurableRepositoryInterface.php',
     'Composer\\Repository\\FilesystemRepository' => $vendorDir . '/composer/composer/src/Composer/Repository/FilesystemRepository.php',
     'Composer\\Repository\\InstalledArrayRepository' => $vendorDir . '/composer/composer/src/Composer/Repository/InstalledArrayRepository.php',
     'Composer\\Repository\\InstalledFilesystemRepository' => $vendorDir . '/composer/composer/src/Composer/Repository/InstalledFilesystemRepository.php',
